@@ -1,4 +1,4 @@
-import css from "./default.module.css";
+import css from "./SideBarNotes.module.css";
 
 const tags = [
   { value: "Todo", label: "To Do" },
