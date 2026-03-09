@@ -1,51 +1,49 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import NotePreview from "@/components/NotePreview/NotePreview";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import { Note } from "@/types/note";
-import Modal from "../../default";
+import type { Note } from "@/types/note";
 
-interface NotePreviewModalProps {
-  params: { id: string };
+interface NotePreviewProps {
+  noteId: string;
 }
 
-export default function NotePreviewModal({ params }: NotePreviewModalProps) {
-
+export default function NotePreview({ noteId }: NotePreviewProps) {
   const router = useRouter();
 
   const { data: note, isLoading, isError } = useQuery<Note>({
-    queryKey: ["note", params.id],
-    queryFn: () => fetchNoteById(params.id),
+    queryKey: ["note", noteId],
+    queryFn: () => fetchNoteById(noteId),
     refetchOnMount: false,
   });
 
-  const handleClose = () => router.back();
+  const handleClose = () => {
+    router.back();
+  };
+
+  if (isLoading) return <p>Loading note...</p>;
+  if (isError || !note) return <p>Error loading note.</p>;
 
   return (
-    <Modal isOpen={true} onClose={handleClose}>
-      <div style={{ position: "relative" }}>
-        <button
-          onClick={handleClose}
-          style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            background: "transparent",
-            border: "none",
-            fontSize: 24,
-            cursor: "pointer",
-          }}
-        >
-          ×
-        </button>
-        {isLoading && <p>Loading note...</p>}
+    <div style={{ position: "relative", padding: "24px" }}>
+      <button
+        onClick={handleClose}
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          cursor: "pointer",
+        }}
+      >
+        Close
+      </button>
 
-        {isError && <p>Error loading note.</p>}
-
-        {note && <NotePreview noteId={params.id} />}
-      </div>
-    </Modal>
+      <h2>{note.title}</h2>
+      <p>{note.content}</p>
+      <p>
+        <strong>Tag:</strong> {note.tag}
+      </p>
+    </div>
   );
 }
