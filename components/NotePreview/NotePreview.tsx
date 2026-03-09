@@ -1,22 +1,21 @@
-
 "use client";
 
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
-import { Note } from "@/types/note";
+import type { Note } from "@/types/note";
 
 interface NotePreviewProps {
   noteId: string;
 }
 
 export default function NotePreview({ noteId }: NotePreviewProps) {
-
   const router = useRouter();
+
   const { data: note, isLoading, isError } = useQuery<Note>({
     queryKey: ["note", noteId],
     queryFn: () => fetchNoteById(noteId),
-    refetchOnMount: false, 
+    refetchOnMount: false,
   });
 
   const handleClose = () => {
