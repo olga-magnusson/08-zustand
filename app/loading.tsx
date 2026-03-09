@@ -1,5 +1,5 @@
 // app/loading.tsx
-import css from "./loading.module.css";
+import css from "./page.module.css";
 
 export default function Loading() {
   return (
