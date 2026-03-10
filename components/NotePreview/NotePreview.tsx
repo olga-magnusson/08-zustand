@@ -1,7 +1,7 @@
 
 "use client";
 
-
+import css from "./NotePreview.module.css"
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api";
 import { Note } from "@/types/note";
@@ -21,10 +21,10 @@ export default function NotePreview({ noteId }: NotePreviewProps) {
   if (isError || !note) return <p>Error loading note.</p>;
 
   return (
-    <div>
-      <h2>{note.title}</h2>
-      <p>{note.content}</p>
-      <p>Tag: {note.tag}</p>
-    </div>
+    <div className={css.container}>
+  <h2 className={css.title}>{note.title}</h2>
+  <p className={css.content}>{note.content}</p>
+  <p className={css.tag}>Tag: {note.tag}</p>
+</div>
   );
 }
