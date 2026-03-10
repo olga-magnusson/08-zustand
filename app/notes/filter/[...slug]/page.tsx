@@ -1,11 +1,36 @@
 import { fetchNotes } from "@/lib/api";
 import NotesClient from "./Notes.client";
-import type { FetchNotesResponse } from "@/lib/api";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 import type { NoteTag } from "@/types/note";
+import type { Metadata } from "next";
+
 
 interface FilterPageProps {
   params: Promise<{ slug: string[] }>;
+}
+
+export async function generateMetadata({ params }: { params: { slug: string[] } }): Promise<Metadata> {
+  const slugArray = params.slug || [];
+  const rawTag = slugArray[0];
+  const tag: NoteTag | "all" = rawTag && rawTag !== "all" ? (rawTag as NoteTag) : "all";
+
+  return {
+    title: `Notes - ${tag} | NoteHub`,
+    description: `Browse all ${tag} notes in NoteHub.`,
+    openGraph: {
+      title: `Notes - ${tag} | NoteHub`,
+      description: `Browse all ${tag} notes in NoteHub.`,
+      url: `https://your-vercel-domain.vercel.app/notes/filter/${tag}`,
+      images: [
+        {
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+          width: 1200,
+          height: 630,
+          alt: "NoteHub OG Image",
+        },
+      ],
+    },
+  };
 }
 
 export default async function FilterPage({ params }: FilterPageProps) {
@@ -16,14 +41,6 @@ export default async function FilterPage({ params }: FilterPageProps) {
   const rawTag = slugArray[0];
   const tag: NoteTag | undefined =
   rawTag && rawTag !== "all" ? (rawTag as NoteTag) : undefined;
-
-  // Corrected fetchNotes call
-  const initialNotes: FetchNotesResponse = await fetchNotes({
-    page: 1,
-    perPage: 12,
-    tag: tag,
-    search: "",
-  });
 
   await queryClient.prefetchQuery({
     queryKey: ["notes", 1, tag || "all"],
@@ -38,7 +55,7 @@ export default async function FilterPage({ params }: FilterPageProps) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient initialNotes={initialNotes} tag={tag || "all"} />
+      <NotesClient tag={tag || "all"} />
     </HydrationBoundary>
   );
 }
