@@ -19,10 +19,14 @@ export default function NotesClient({ tag }: NotesClientProps) {
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>(search);
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1); 
+  };
+
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1); 
+      setDebouncedSearch(search); 
     }, 500);
 
     return () => clearTimeout(handler);
@@ -48,7 +52,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
         <button>Create Note</button>
       </Link>
 
-      <SearchBox value={search} onSearch={setSearch} />
+      <SearchBox value={search} onSearch={handleSearchChange} />
 
       {isLoading && <p>Loading notes...</p>}
       {isError && <p>Error loading notes.</p>}
