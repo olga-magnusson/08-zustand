@@ -12,10 +12,9 @@ interface FilterPageProps {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string[] }>;
+  params: { slug: string[] };
 }): Promise<Metadata> {
-  const resolvedParams = await params;
-  const slugArray = resolvedParams.slug || [];
+  const slugArray = params.slug || [];
   const rawTag = slugArray[0];
   const tag: NoteTag | "all" = rawTag && rawTag !== "all" ? (rawTag as NoteTag) : "all";
 
