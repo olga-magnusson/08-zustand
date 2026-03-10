@@ -12,14 +12,12 @@ import type { FetchNotesResponse } from "@/lib/api";
 
 interface NotesClientProps {
   tag: NoteTag | "all";
-  initialNotes?: FetchNotesResponse;
 }
 
-export default function NotesClient({ tag, initialNotes }: NotesClientProps) {
+export default function NotesClient({ tag }: NotesClientProps) {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>(search);
-
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -40,24 +38,20 @@ export default function NotesClient({ tag, initialNotes }: NotesClientProps) {
         search: debouncedSearch,
       }),
     staleTime: 1000 * 60,
-    initialData: initialNotes,
   });
 
   const totalPages: number = data?.totalPages ?? 1;
 
   return (
     <div>
-
       <Link href="/notes/action/create">
         <button>Create Note</button>
       </Link>
-
 
       <SearchBox value={search} onSearch={setSearch} />
 
       {isLoading && <p>Loading notes...</p>}
       {isError && <p>Error loading notes.</p>}
-
 
       {data && <NoteList notes={data.notes} />}
 
