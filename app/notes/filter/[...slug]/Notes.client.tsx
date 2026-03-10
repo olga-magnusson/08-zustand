@@ -2,20 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNotes, FetchNotesResponse } from "@/lib/api";
+import { fetchNotes} from "@/lib/api";
 import type { NoteTag } from "@/types/note";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import Modal from "@/components/Modal/Modal"; 
 import NoteForm from "@/components/NoteForm/NoteForm";
 import NoteList from "@/components/NoteList/NoteList";
+import type { FetchNotesResponse } from "@/lib/api";
 
 
 interface NotesClientProps {
   tag: NoteTag | "all";
+  initialNotes?: FetchNotesResponse; 
 }
 
-export default function NotesClient({ tag }: NotesClientProps) {
+export default function NotesClient({ tag, initialNotes }: NotesClientProps) {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>(search);
@@ -42,6 +44,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
         search: debouncedSearch,
       }),
     staleTime: 1000 * 60,
+    initialData: initialNotes,
   });
 
   const totalPages: number = data?.totalPages ?? 1;
@@ -51,26 +54,21 @@ export default function NotesClient({ tag }: NotesClientProps) {
 
   return (
     <div>
-      {/* Кнопка для створення нової нотатки */}
+  
       <button onClick={openModal}>Create Note</button>
 
-      {/* Пошуковий інпут */}
       <SearchBox value={search} onSearch={setSearch} />
 
-      {/* Стан завантаження/помилки */}
       {isLoading && <p>Loading notes...</p>}
       {isError && <p>Error loading notes.</p>}
 
-      {/* Список нотаток */}
       {data && <NoteList notes={data.notes} />}
 
-      {/* Пагінація */}
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
 
-      {/* Модальне вікно для створення нотатки */}
       {isModalOpen && (
         <Modal  onClose={closeModal}>
-          <NoteForm closeModal={closeModal} />
+          <NoteForm  />
         </Modal>
       )}
     </div>
