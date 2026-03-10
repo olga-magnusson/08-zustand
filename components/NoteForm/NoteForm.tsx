@@ -22,7 +22,7 @@ export default function NoteForm() {
   const [content, setContent] = useState(draft.content);
   const [tag, setTag] = useState<NoteTag>(draft.tag);
 
-  // React Query mutation
+
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
@@ -32,7 +32,6 @@ export default function NoteForm() {
     },
   });
 
-  // Save draft in Zustand when fields change
   useEffect(() => {
     setDraft({ title, content, tag });
   }, [title, content, tag, setDraft]);
@@ -48,7 +47,7 @@ export default function NoteForm() {
   };
 
   const handleCancel = () => {
-    router.back(); // draft stays saved
+    router.back(); 
   };
 
   return (
