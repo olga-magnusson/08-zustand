@@ -4,13 +4,18 @@ import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query
 import type { NoteTag } from "@/types/note";
 import type { Metadata } from "next";
 
-
 interface FilterPageProps {
   params: Promise<{ slug: string[] }>;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string[] } }): Promise<Metadata> {
-  const slugArray = params.slug || [];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slugArray = resolvedParams.slug || [];
   const rawTag = slugArray[0];
   const tag: NoteTag | "all" = rawTag && rawTag !== "all" ? (rawTag as NoteTag) : "all";
 
@@ -39,23 +44,22 @@ export default async function FilterPage({ params }: FilterPageProps) {
   const resolvedParams = await params;
   const slugArray = resolvedParams.slug || [];
   const rawTag = slugArray[0];
-  const tag: NoteTag | undefined =
-  rawTag && rawTag !== "all" ? (rawTag as NoteTag) : undefined;
+  const tag: NoteTag | "all" = rawTag && rawTag !== "all" ? (rawTag as NoteTag) : "all";
 
   await queryClient.prefetchQuery({
-    queryKey: ["notes", 1, tag || "all"],
+    queryKey: ["notes", 1, tag],
     queryFn: () =>
       fetchNotes({
         page: 1,
         perPage: 12,
-        tag: tag,
+        tag: tag === "all" ? undefined : tag,
         search: "",
       }),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <NotesClient tag={tag || "all"} />
+      <NotesClient tag={tag} />
     </HydrationBoundary>
   );
 }
